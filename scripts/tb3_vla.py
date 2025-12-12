@@ -24,7 +24,7 @@ sim = TurtlebotFactorySim(
 # 2) Gemini + YOLO + 명령 생성
 agent = GeminiTb3(
     prompt_path=prompt_path,
-    model="gemini-2.5-flash-lite",
+    model="gemini-robotics-er-1.5-preview",
     command_queue=cmd_q,
 )
 

@@ -21,7 +21,6 @@ ACTION_TABLE = {
     "제자리 회전": (4.0, -4.0),
 }
 
-
 try:
     from ultralytics import YOLO
     _YOLO_AVAILABLE = True

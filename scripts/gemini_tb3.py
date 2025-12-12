@@ -15,13 +15,33 @@ import cv2
 
 load_dotenv()
 
+TARGET_MAP = {
+    "하트": "heart",
+    "heart": "heart",
+    "다이아": "diamond",
+    "다이아몬드": "diamond",
+    "diamond": "diamond",
+    "클로버": "club",
+    "클로바": "club",
+    "클럽": "club",
+    "club": "club",
+    "스페이드": "spade",
+    "spade": "spade",
+}
+
+SEARCH_CMD = {
+    "heart": "SEARCH_HEART",
+    "diamond": "SEARCH_DIAMOND",
+    "club": "SEARCH_CLUB",
+    "spade": "SEARCH_SPADE",
+}
 
 # ============================================
 # GEMINI LLM RUNNER FOR TURTLEBOT3
 # ============================================
 
 class GeminiTb3:
-    def __init__(self, prompt_path, model="gemini-2.5-flash", command_queue=None):
+    def __init__(self, prompt_path, model="gemini-robotics-er-1.5-preview", command_queue=None):
         self.command_queue = command_queue if command_queue else Queue()
 
         # Load prompt.yaml
@@ -39,6 +59,7 @@ class GeminiTb3:
     # ----------------------------------------
     def run_gemini(self, question, detection_json):
         """Gemini에게 분석 요청"""
+        print(f"[GeminiTb3] Using model: {self.model_name}")
         user_content = f"""
 # 감지된 객체 정보(JSON):
 {detection_json}
@@ -59,15 +80,13 @@ class GeminiTb3:
         except Exception as e:
             return f"Gemini Error: {e}"
     # ----------------------------------------
-    def _extract_target_from_question(self, question: str) -> str | None:
-        if "하트" in question:
-            return "heart"
-        if "스페이드" in question:
-            return "spade"
-        if "클로버" in question or "클럽" in question:
-            return "club"
-        if "다이아" in question or "다이아몬드" in question:
-            return "diamond"
+    def _extract_target_from_question(self, q: str) -> str | None:
+        q_low = q.lower()
+        # 긴 단어 우선(다이아몬드가 다이아보다 먼저 매칭되게)
+        keys = sorted(TARGET_MAP.keys(), key=len, reverse=True)
+        for k in keys:
+            if k.lower() in q_low:
+                return TARGET_MAP[k]
         return None
 
     # ----------------------------------------
@@ -76,25 +95,34 @@ class GeminiTb3:
             try:
                 question = input("\n💬 Human: ")
 
-                # 1) YOLO 결과
-                det_dict = sim.yolo_detect_dict()
+                # YOLO
+                det_dict = sim.yolo_detect_dict() or {}
                 det_json = json.dumps(det_dict, ensure_ascii=False, indent=2)
 
-                # 1.5) 질문 안에 목표 카드 있는지 확인
+                # 목표 카드 추출 (heart/diamond/club/spade)
                 target = self._extract_target_from_question(question)
-                if target and target not in det_dict:
-                    # 아직 안 보이면 탐색 액션 한 번 추가
-                    print(f"➡️ '{target}' 카드가 안 보여서 제자리 회전으로 둘러볼게요.")
-                    self.command_queue.put("제자리 회전")
 
-                # 2) LLM 호출
+                # 1) 목표가 있는데 화면에 없으면: SEARCH 모드로 전환하고 이 턴은 끝
+                if target and target not in det_dict:
+                    cmd = SEARCH_CMD[target]
+                    print(f"➡️ '{target}' 카드가 안 보여서 {cmd}로 탐색할게요.")
+                    self.command_queue.put(cmd)
+
+                    # 여기서 LLM을 호출하면 "멈춤" 같은 액션이 또 들어와서 검색이 끊길 수 있음
+                    # 따라서 이 턴은 종료(=검색만 수행)
+                    continue
+
+                # 2) 목표가 있거나/없거나 상관없이 LLM 호출 (단, 목표가 있다면 이미 보이는 상태)
                 answer = self.run_gemini(question, det_json)
                 print(f"\n🤖 Gemini:\n{answer}\n")
 
-                # 3) LLM이 낸 Action도 그대로 반영
+                # 3) Action 추출
                 action_match = re.search(r"Action:\s*([^\n]+)", answer)
                 action = action_match.group(1).strip() if action_match else ""
 
+                # 4) 방어 로직:
+                # - 목표가 있고 '보이는' 상태인데 LLM이 멈춤을 내면, 일단 멈춤도 존중하거나
+                #   네가 원하면 "target 쪽으로 이동" 같은 룰을 추가할 수도 있음.
                 if action:
                     print(f"➡️ Extracted Action: {action}")
                     self.command_queue.put(action)
