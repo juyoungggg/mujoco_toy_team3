@@ -1,5 +1,5 @@
 <mujoco model="turtlebot3_burger">
-  <compiler angle="radian" meshdir="/data/jinsup/js_mujoco/asset/robotis_tb3/assets" autolimits="true"/>
+  <compiler angle="degree" meshdir="/home/juyoung/mujoco_llm/asset/robotis_tb3/assets" autolimits="true"/>
 
   <option integrator="implicitfast"/>
 
@@ -82,8 +82,8 @@
   </worldbody>
 
   <sensor>
-    <!-- LiDAR -->
-    <rangefinder name="laser" site="rf" cutoff="3.0"/>
+    <!-- LiDAR (cutoff 변경)-->
+    <rangefinder name="laser" site="rf" cutoff="15.0"/>
 
     <!-- IMU -->
     <accelerometer name="accelerometer" site="imu"/>

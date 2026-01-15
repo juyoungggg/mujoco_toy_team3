@@ -26,16 +26,16 @@
         <mesh name="card_mesh" file="cards/card.obj" scale="3 3 3"/>
 
         <!-- 퀸 4장 텍스처 & 재질 -->
-        <texture name="ace_of_clubs_tex"    type="2d" file="cards/ace_of_clubs.png"/>
+        <texture name="ace_of_clubs_tex"    type="2d" file="cards/go_straight.png"/>
         <material name="ace_of_clubs_mat"   texture="ace_of_clubs_tex"/>
 
-        <texture name="ace_of_diamonds_tex" type="2d" file="cards/ace_of_diamonds.png"/>
+        <texture name="ace_of_diamonds_tex" type="2d" file="cards/rotate.png"/>
         <material name="ace_of_diamonds_mat" texture="ace_of_diamonds_tex"/>
 
-        <texture name="ace_of_hearts_tex"   type="2d" file="cards/ace_of_hearts.png"/>
+        <texture name="ace_of_hearts_tex"   type="2d" file="cards/turn_right.png"/>
         <material name="ace_of_hearts_mat"  texture="ace_of_hearts_tex"/>
 
-        <texture name="ace_of_spades_tex"   type="2d" file="cards/ace_of_spades.png"/>
+        <texture name="ace_of_spades_tex"   type="2d" file="cards/turn_left.png"/>
         <material name="ace_of_spades_mat"  texture="ace_of_spades_tex"/>
     </asset>
 
@@ -63,6 +63,44 @@
               pos="0 0 0.001"
               size="1.5 1.5 0.0005"
               material="logo_mat" />
+
+
+        <!-- 전방 근거리 장애물 -->
+        <!-- <geom name="obstacle_near"
+              type="box"
+              pos="0.6 0 0.25"
+              size="0.05 1.5 0.25"
+              rgba="1 0 0 1"
+              contype="1"
+              conaffinity="1"/> -->
+
+
+        <!-- U-shaped obstacle around robot (robot at 0,0,0) -->
+        <!-- 각 geom은 위에서부터 앞쪽 벽 (정면), 왼쪽 벽, 오른쪽 벽-->
+        <!-- <body name="u_obstacles_rotated" pos="0 0 0" euler="0 0 -1.5708">
+
+            <geom
+                name="wall_1"
+                type="box"
+                size="0.05 0.6 0.25"
+                pos="0.6 0.0 0.25"
+                rgba="0.6 0.6 0.6 1"/>
+
+            <geom
+                name="wall_2"
+                type="box"
+                size="0.4 0.05 0.25"
+                pos="0.35 0.55 0.25"
+                rgba="0.6 0.6 0.6 1"/>
+
+            <geom
+                name="wall_3"
+                type="box"
+                size="0.4 0.05 0.25"
+                pos="0.35 -0.55 0.25"
+                rgba="0.6 0.6 0.6 1"/>
+
+        </body> -->
 
         <!-- 벽: 바닥(z=0)에서 위로 2m 정도 올라가도록 (center z=1, half-height=1) -->
         <geom name="wall_front"
@@ -92,22 +130,22 @@
         <!-- 카드들도 z≈0 근처에 눕혀 놓기 -->
         <!-- euler="0 0 0" : 회전 없이 기본 방향 -->
 
-        <body name="card_ace_clubs" pos="-1.5 -3 0.3" euler="-1.57 0 -1.57">
+        <body name="card_go_straight" pos="-1.5 -2 0.3" euler="-90 0 -90">
             <geom class="card" material="ace_of_clubs_mat"/>
             <geom type="box" size="0.047 0.032 0.0005" mass="0" group="3" friction=".2"/>
         </body>
 
-        <body name="card_ace_diamonds" pos="-0.7 -3 0.3" euler="-1.57 0 -1.57">
+        <body name="card_rotate" pos="-0.7 -2 0.3" euler="-90 0 -90">
             <geom class="card" material="ace_of_diamonds_mat"/>
             <geom type="box" size="0.047 0.032 0.0005" mass="0" group="3" friction=".2"/>
         </body>
 
-        <body name="card_ace_hearts" pos="0.7 -3 0.3" euler="-1.57 0 -1.57">
+        <body name="card_turn_right" pos="0.7 -2 0.3" euler="-90 0 -90">
             <geom class="card" material="ace_of_hearts_mat"/>
             <geom type="box" size="0.047 0.032 0.0005" mass="0" group="3" friction=".2"/>
         </body>
 
-        <body name="card_ace_spades" pos="1.5 -3 0.3" euler="-1.57 0 -1.57">
+        <body name="card_turn_left" pos="1.5 -2 0.3" euler="-90 0 -90">
             <geom class="card" material="ace_of_spades_mat"/>
             <geom type="box" size="0.047 0.032 0.0005" mass="0" group="3" friction=".2"/>
         </body>

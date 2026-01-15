@@ -4,12 +4,13 @@ import cv2
 import mujoco as mj
 
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))  # 프로젝트 루트로
+sys.path.append(os.path.abspath(os.path.join(os.getcwd())))  # 프로젝트 루트로
+print(f"Sys path: {sys.path}")
 
 from utils.mujoco_renderer import MuJoCoViewer
 
 # 사용할 XML 파일 경로
-XML_PATH = "/data/jinsup/js_mujoco/asset/robotis_tb3/tb3_factory_cards.xml"
+XML_PATH = "/home/juyoung/mujoco_llm/asset/robotis_tb3/tb3_factory_cards.xml"
 
 # 저장 위치 (train 이미지)
 OUT_DIR = "img_dataset/images"

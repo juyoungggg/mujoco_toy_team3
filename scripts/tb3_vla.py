@@ -4,7 +4,7 @@ from queue import Queue
 from tb3_sim import TurtlebotFactorySim
 from gemini_tb3 import GeminiTb3
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.getcwd(), ".."))
+PROJECT_ROOT = os.path.abspath(os.getcwd())
 xml_path = os.path.join(PROJECT_ROOT, "asset", "robotis_tb3", "tb3_factory_cards.xml")
 prompt_path = os.path.join(PROJECT_ROOT, "scripts", "prompt.yaml")
 yolo_weights = os.path.join(PROJECT_ROOT, "scripts", "best.pt")

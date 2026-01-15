@@ -29,6 +29,7 @@ class MuJoCoViewer:
         glfw.init()
         self.window_main = glfw.create_window(900, 900, "Observer View", None, None)
         self.window_robot = glfw.create_window(640, 480, "Camera View", None, self.window_main)
+        
         glfw.make_context_current(self.window_main)
         self.ctx_main = mj.MjrContext(self.model, mj.mjtFontScale.mjFONTSCALE_150.value)
         glfw.make_context_current(self.window_robot)
@@ -69,8 +70,9 @@ class MuJoCoViewer:
     def poll_events(self):
         glfw.poll_events()
 
-    def render_main(self, overlay_type="imu"):
-        self.main_renderer.render_window(overlay_type=overlay_type)
+    # 실제 거리 표시를 위해 extra_info 추가
+    def render_main(self, overlay_type="imu", extra_info = None):
+        self.main_renderer.render_window(overlay_type=overlay_type, extra_info=extra_info)
 
     def render_robot(self):
         self.robot_renderer.render_window(overlay_type=None)
@@ -103,12 +105,21 @@ class Renderer:
         self.opt = opt
         self.w, self.h = glfw.get_framebuffer_size(self.window)
 
-    def render_window(self, overlay_type=None):
+    # 실제 거리 표시를 위해 extra_info 처리 추가
+    def render_window(self, overlay_type=None, extra_info=None):
         glfw.make_context_current(self.window)
         viewport = mj.MjrRect(0, 0, self.w, self.h)
         mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam, mj.mjtCatBit.mjCAT_ALL.value, self.scene)
         mj.mjr_render(viewport, self.scene, self.ctx)
         overlay_text = self.set_overlay_type(overlay_type)
+
+        # 외부 텍스트가 더 있으면 이어 붙임
+        if extra_info:
+            if overlay_text:
+                overlay_text += "\n\n" + extra_info
+            else:
+                overlay_text = extra_info
+
         if overlay_text:
             mj.mjr_overlay(mj.mjtFont.mjFONT_NORMAL, mj.mjtGridPos.mjGRID_TOPRIGHT, viewport, overlay_text, None, self.ctx)
         glfw.swap_buffers(self.window)

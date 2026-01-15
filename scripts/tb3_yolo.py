@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
 from tb3_sim import TurtlebotFactorySim
 
 # XML, YOLO weight 경로
-PROJECT_ROOT = os.path.abspath(os.path.join(os.getcwd(), ".."))
+PROJECT_ROOT = os.path.abspath(os.getcwd())
 XML_PATH = os.path.join(PROJECT_ROOT, "asset", "robotis_tb3", "tb3_factory_cards.xml")
 YOLO_WEIGHTS = os.path.join(PROJECT_ROOT, "scripts", "best.pt")  # 위치에 맞게 수정
 

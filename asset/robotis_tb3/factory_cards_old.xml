@@ -1,0 +1,116 @@
+<mujoco model="factory_cards">
+    <option timestep="0.001" gravity="0 0 -9.81"
+            integrator="RK4" solver="PGS" />
+
+    <visual>
+        <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" />
+        
+        <rgba fog="0.10 0.12 0.14 1" />
+        
+        <global azimuth="120" elevation="-20" />
+    </visual>
+
+    <asset>
+        <texture type="skybox" builtin="gradient"
+                 rgb1="0.05 0.08 0.12" rgb2="0.25 0.27 0.30"
+                 width="512" height="3072" />
+
+        <material name="floor_mat" rgba="0.6 0.6 0.6 1" reflectance="0" />
+
+        <texture name="kmu_logo_tex" type="2d" file="Signature_KMU.png" />
+        <material name="logo_mat" texture="kmu_logo_tex" texuniform="true" />
+
+        <!-- ====== 여기부터 카드 관련 asset ====== -->
+
+        <!-- 카드 평판 mesh (cards 디렉토리 안 card.obj) -->
+        <mesh name="card_mesh" file="cards/card.obj" scale="3 3 3"/>
+
+        <!-- 퀸 4장 텍스처 & 재질 -->
+        <texture name="ace_of_clubs_tex"    type="2d" file="cards/ace_of_clubs.png"/>
+        <material name="ace_of_clubs_mat"   texture="ace_of_clubs_tex"/>
+
+        <texture name="ace_of_diamonds_tex" type="2d" file="cards/ace_of_diamonds.png"/>
+        <material name="ace_of_diamonds_mat" texture="ace_of_diamonds_tex"/>
+
+        <texture name="ace_of_hearts_tex"   type="2d" file="cards/ace_of_hearts.png"/>
+        <material name="ace_of_hearts_mat"  texture="ace_of_hearts_tex"/>
+
+        <texture name="ace_of_spades_tex"   type="2d" file="cards/ace_of_spades.png"/>
+        <material name="ace_of_spades_mat"  texture="ace_of_spades_tex"/>
+    </asset>
+
+    <!-- 카드 공통 속성 -->
+    <default>
+        <default class="card">
+            <!-- card_mesh를 사용하는 얇은 카드 -->
+            <geom type="mesh"
+                  mesh="card_mesh"
+                  mass="1e-3"
+                  contype="1"
+                  conaffinity="1"/>
+        </default>
+    </default>
+
+    <worldbody>
+        <light pos="0 0 8" dir="0 0 -1" directional="true" />
+
+        <!-- 바닥을 z = 0 에 둔다 -->
+        <geom name="floor_base" type="plane" size="8 6 0.05" pos="0 0 0" material="floor_mat" />
+
+        <!-- 로고: 바닥 위에 아주 얇게 깔기 (살짝만 위로) -->
+        <geom name="floor_logo"
+              type="box"
+              pos="0 0 0.001"
+              size="1.5 1.5 0.0005"
+              material="logo_mat" />
+
+        <!-- 벽: 바닥(z=0)에서 위로 2m 정도 올라가도록 (center z=1, half-height=1) -->
+        <geom name="wall_front"
+              type="box"
+              pos="0 6 1"
+              size="8 0.1 1"
+              rgba="0.18 0.20 0.3 1" />
+        
+        <geom name="wall_back"
+              type="box"
+              pos="0 -6 1"
+              size="8 0.1 1"
+              rgba="0.18 0.20 0.3 1" />
+        
+        <geom name="wall_left"
+              type="box"
+              pos="-8 0 1"
+              size="0.1 6 1"
+              rgba="0.18 0.20 0.3 1" />
+        
+        <geom name="wall_right"
+              type="box"
+              pos="8 0 1"
+              size="0.1 6 1"
+              rgba="0.18 0.20 0.3 1" />
+
+        <!-- 카드들도 z≈0 근처에 눕혀 놓기 -->
+        <!-- euler="0 0 0" : 회전 없이 기본 방향 -->
+
+        <body name="card_ace_clubs" pos="-1.5 -3 0.3" euler="-1.57 0 -1.57">
+            <geom class="card" material="ace_of_clubs_mat"/>
+            <geom type="box" size="0.047 0.032 0.0005" mass="0" group="3" friction=".2"/>
+        </body>
+
+        <body name="card_ace_diamonds" pos="-0.7 -3 0.3" euler="-1.57 0 -1.57">
+            <geom class="card" material="ace_of_diamonds_mat"/>
+            <geom type="box" size="0.047 0.032 0.0005" mass="0" group="3" friction=".2"/>
+        </body>
+
+        <body name="card_ace_hearts" pos="0.7 -3 0.3" euler="-1.57 0 -1.57">
+            <geom class="card" material="ace_of_hearts_mat"/>
+            <geom type="box" size="0.047 0.032 0.0005" mass="0" group="3" friction=".2"/>
+        </body>
+
+        <body name="card_ace_spades" pos="1.5 -3 0.3" euler="-1.57 0 -1.57">
+            <geom class="card" material="ace_of_spades_mat"/>
+            <geom type="box" size="0.047 0.032 0.0005" mass="0" group="3" friction=".2"/>
+        </body>
+
+    </worldbody>
+    </mujoco>

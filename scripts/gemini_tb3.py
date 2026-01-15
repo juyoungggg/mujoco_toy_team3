@@ -97,7 +97,27 @@ class GeminiTb3:
 
                 # YOLO
                 det_dict = sim.yolo_detect_dict() or {}
+
+                # --- [수정] 감지된 객체들에 대해 거리 정보 추가 ---
+                # det_dict 구조: {'heart': [{'bbox':..., 'center':...}], ...}
+
+                for label, objects in det_dict.items():
+                    # 시뮬레이터에게 해당 라벨까지의 거리와 시간 물어봄
+                    real_dist, real_time = sim.get_target_distance_and_time(label)
+                    
+                    # 값이 유효하다면 리스트 안의 모든 객체(또는 첫번째)에 정보 주입
+                    if real_dist is not None:
+                        for obj in objects:
+                            obj['distance_m'] = round(real_dist, 2)         # 미터 단위 (소수점 2자리)
+                            obj['time_to_stop_10cm'] = round(real_time, 2)  # 초 단위
+                
+                # ==========================================================
+
+                # 2. 이제 거리 정보가 포함된 딕셔너리를 JSON으로 변환
                 det_json = json.dumps(det_dict, ensure_ascii=False, indent=2)
+                
+                # (디버깅용) 실제로 값이 들어갔는지 터미널에서 확인
+                print(f"DEBUG JSON: {det_json}")
 
                 # 목표 카드 추출 (heart/diamond/club/spade)
                 target = self._extract_target_from_question(question)
