@@ -170,9 +170,9 @@ class TurtlebotFactorySim:
                     error_rate = abs(dist - real_dist) / real_dist * 100.0
 
                 if real_dist is not None:
-                    dist_str = f"{dist:.2f}m" if dist is not None else "N/A"
+                    gt_str = f"{real_dist:.2f}m" if dist is not None else "N/A"
                     err_str = f"({error_rate:.1f}%)" if error_rate is not None else "(N/A)"
-                    gt_info_str += f"  {label:<12}: {dist_str:>7} {err_str:>8}\n"
+                    gt_info_str += f"  {label:<12}: {gt_str:>7} {err_str:>8}\n"
                 else:
                     gt_info_str += f"  {label:<12}: N/A\n"
             
@@ -254,7 +254,7 @@ class TurtlebotFactorySim:
             return None
         return self.detector.detect_image(self.latest_frame)
 
-    # YOLO 화면데 LiDAR 측정값  표
+    # YOLO 화면에 LiDAR 측정값 표시
     def _run_yolo_on_latest_frame(self):
         if not self.use_yolo or self.detector is None or self.latest_frame is None:
             return
